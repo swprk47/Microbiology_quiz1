@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>미생물학 기말고사 완벽 대비</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+KR:wght@300;400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0f172a;
+            --surface-color: rgba(30, 41, 59, 0.7);
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --correct: #10b981;
+            --incorrect: #ef4444;
+            --text-main: #f8fafc;
+            --text-muted: #cbd5e1;
+            --glass-border: rgba(255, 255, 255, 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', 'Noto Sans KR', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 85% 30%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 2rem;
+            animation: fadeInDown 0.8s ease-out;
+        }
+
+        header h1 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, #a5b4fc, #6366f1);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 0.5rem;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            gap: 2rem;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            height: fit-content;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeInLeft 0.8s ease-out;
+        }
+
+        .sidebar h2 {
+            font-size: 1.2rem;
+            margin-bottom: 1rem;
+            color: var(--text-main);
+        }
+
+        .chapter-list {
+            list-style: none;
+        }
+
+        .chapter-list li {
+            padding: 0.8rem 1rem;
+            margin-bottom: 0.5rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-muted);
+            border: 1px solid transparent;
+        }
+
+        .chapter-list li:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: var(--text-main);
+        }
+
+        .chapter-list li.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary-hover);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        .main-content {
+            flex: 1;
+            background: var(--surface-color);
+            backdrop-filter: blur(12px);
+            border: 1px solid var(--glass-border);
+            border-radius: 16px;
+            padding: 2.5rem;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+            animation: fadeInRight 0.8s ease-out;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--primary);
+            width: 0%;
+            transition: width 0.4s ease;
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .question-badge {
+            background: rgba(99, 102, 241, 0.2);
+            color: #a5b4fc;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .score-badge {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-muted);
+        }
+
+        .question-text {
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            line-height: 1.5;
+        }
+
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .option {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.2rem 1.5rem;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+        }
+
+        .option:hover {
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .option.selected.correct {
+            background: rgba(16, 185, 129, 0.2);
+            border-color: var(--correct);
+            box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+        }
+
+        .option.selected.incorrect {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: var(--incorrect);
+            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
+        }
+
+        .option.show-correct {
+            background: rgba(16, 185, 129, 0.1);
+            border-color: var(--correct);
+        }
+
+        .explanation {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-left: 4px solid var(--primary);
+            border-radius: 0 8px 8px 0;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .explanation h4 {
+            color: var(--primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .explanation p {
+            line-height: 1.6;
+            color: var(--text-muted);
+        }
+
+        .controls {
+            margin-top: 2rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+
+        button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+        }
+
+        button:disabled {
+            background: rgba(255, 255, 255, 0.1);
+            color: rgba(255, 255, 255, 0.3);
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes fadeInLeft {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeInRight {
+            from { opacity: 0; transform: translateX(20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Celebration Effect */
+        .celebration {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 4rem;
+            pointer-events: none;
+            animation: popUp 1s ease-out forwards;
+            opacity: 0;
+            z-index: 100;
+        }
+
+        @keyframes popUp {
+            0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+            50% { transform: translate(-50%, -60%) scale(1.2); opacity: 1; }
+            100% { transform: translate(-50%, -70%) scale(1); opacity: 0; }
+        }
+
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>미생물학 기말고사 암기빵 🍞</h1>
+        <p>기말고사 D-6! 제공해주신 퀴즈를 모두 담았습니다. 100점 가자!</p>
+    </header>
+
+    <div class="container">
+        <div class="sidebar">
+            <h2>📚 챕터 선택</h2>
+            <ul class="chapter-list" id="chapterList">
+                <!-- Chapters injected by JS -->
+            </ul>
+        </div>
+
+        <div class="main-content">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+            
+            <div class="question-header">
+                <span class="question-badge" id="questionBadge">문제 1/12</span>
+                <span class="score-badge" id="scoreBadge">점수: 0점</span>
+            </div>
+
+            <div class="question-text" id="questionText">
+                챕터를 선택하여 학습을 시작하세요!
+            </div>
+
+            <div class="options" id="optionsContainer">
+                <!-- Options injected by JS -->
+            </div>
+
+            <div class="explanation" id="explanationBox">
+                <h4>📖 정답 및 해설</h4>
+                <p id="explanationText"></p>
+            </div>
+
+            <div class="controls">
+                <button id="nextBtn" disabled>다음 문제 ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const quizData = {
+            "9장 (유전학)": [
+                { q: "A mutant that has a nutritional requirement for growth is an example of a(n)", options: ["autotroph.", "auxotroph.", "heterotroph.", "organotroph."], ans: 1, exp: "auxotroph(영양요구체): 영양분이 없는 배지에서는 생장할 수 없는 돌연변이체. (autotroph는 무기물로부터 유기물 합성)" },
+                { q: "Which of the following methods may introduce foreign DNA into a recipient?", options: ["Transformation", "Transduction", "Conjugation", "Transformation, transduction, and conjugation"], ans: 3, exp: "세 가지 모두 외래 DNA 전달 가능. Transformation(환경 중 DNA 흡수), Transduction(파지 매개), Conjugation(세균 간 직접 접촉)." },
+                { q: "Lysogeny probably carries a strong selective advantage for the host cell because it", options: ["prevents cell lysis.", "confers resistance to infection by viruses of the same type.", "confers resistance to infection by viruses of a different type (or strain).", "confers resistance to infection by many virus types and prevent cell lysis."], ans: 1, exp: "Phage conversion: prophage가 동일한 파지에 대한 추가 감염에 면역성을 부여하여 선택적 이점을 제공함." },
+                { q: "Hfr strains of Escherichia coli", options: ["do not possess an F factor.", "have the F factor as a plasmid.", "have an integrated F factor.", "transfer the complete F factor to recipient cells at a high frequency."], ans: 2, exp: "Hfr 균주: F plasmid가 염색체에 통합(integrated)되어 있는 세포." },
+                { q: "Transposition is a(n)", options: ["homologous recombination event.", "analogous recombination event.", "site-specific recombination event.", "general recombination event."], ans: 2, exp: "전이(Transposition)는 transposon이 transposase를 이용해 이동하는 것으로 Site-specific recombination의 한 형태로 간주됨." },
+                { q: "Consider conjugation in Escherichia coli. In which of the following matings would chromosomal genes be transferred most frequently?", options: ["F+ × F-", "F- × F-", "Hfr × F-", "F+ × F+"], ans: 2, exp: "Hfr은 F factor가 염색체에 통합되어 있어 접합 시 염색체 유전자도 함께 이동하므로 전달 빈도가 가장 높음." },
+                { q: "Genetic recombination involving insertion sequences typically results in what type of mutation?", options: ["Base-pair substitution mutation", "Silent mutation", "Frameshift mutation", "Base-pair deletion mutation"], ans: 2, exp: "삽입서열(IS element)이 들어가면 염기 수가 변화하여 Frameshift mutation이 발생 가능함." },
+                { q: "The SOS system repairs DNA that has gaps, breaks, and other lesions by", options: ["cutting DNA from other parts of the genome and pasting it into the gaps or damaged areas.", "stabilizing single-stranded DNA until the next round of normal replication.", "using specialized DNA polymerases that will synthesize a new DNA strand even if there is not a normal complementary DNA strand to act as a template.", "using available mRNA and a special RNA-dependent DNA polymerase to fill in the gaps and replace damaged DNA."], ans: 2, exp: "SOS 복구 시스템: 심한 손상 시 작동하는 응급 복구. 특수 DNA 중합효소가 정상 주형이 없어도 복제를 진행(정확도는 낮지만 생존 높임)." },
+                { q: "When DNA is transferred into a prokaryotic cell, it may", options: ["be degraded by enzymes.", "replicate independent of the host chromosome.", "recombine with the host chromosome.", "be degraded by enzymes, replicate independent of the host chromosome, or recombine with the host chromosome."], ans: 3, exp: "플라스미드 상태로 독립복제 하거나, 염색체에 재조합 되거나, 분해되는 것 모두 가능함." },
+                { q: "The CRISPR system", options: ["facilitates homologous recombination through a complex system of proteins and clustered repeats.", "recognizes foreign DNA sequences that have previously entered the cell and directs the Cas proteins to destroy them.", "repairs DNA and increases DNA damage tolerance during times of stress.", "synthesizes gene transfer agents during stationary phase."], ans: 1, exp: "세균의 적응면역 시스템으로 과거 침입했던 바이러스 DNA를 기억했다가 다시 들어오면 Cas 단백질이 절단함." },
+                { q: "Which of the following is the correct abbreviation for a mutation in a gene that synthesizes one of the enzymes involved in tryptophan production?", options: ["TrpC", "trp", "Trp-", "trpC1"], ans: 3, exp: "Genotype은 소문자 이탤릭(trpC), 돌연변이는 뒤에 숫자가 붙음(trpC1)." },
+                { q: "Horizontal gene transfer", options: ["is rare and only occurs between closely related strains.", "is common and may sometime occur between unrelated organisms.", "does not provide an advantage to organisms.", "only occurs in prokaryotes."], ans: 1, exp: "수평적 유전자 전달(HGT)은 매우 흔하며 종이 다른(unrelated) 생물 간에도 발생 가능. 항생제 내성 확산의 주요 원인." }
+            ],
+            "10장 (생명공학)": [
+                { q: "If a foreign gene is cloned into an expression host, it is important that the host itself", options: ["not produce the protein being studied.", "produce the protein in larger amounts than the vector.", "repress the genetic expression being studied.", "produce signal proteins to tag the host protein."], ans: 0, exp: "단백질 검출과 정제의 편의성을 위해 관찰하고자 하는 단백질을 숙주가 직접 만들어내지 않아야 함." },
+                { q: "A(n) ________ gene is a gene that encodes a protein that is easy to detect and assay.", options: ["encoder", "translational", "reporter", "recorder"], ans: 2, exp: "Reporter gene(리포터 유전자): 유전자 발현 여부를 쉽게 확인할 수 있도록 하는 유전자." },
+                { q: "Which of the following sequences is a palindrome, characteristic of many recognition sequences for restriction endonucleases?", options: ["TTGCCGA/AACGGCT", "GGGGGGG/CCCCCCCC", "GTAATG/CATTAC", "GAATTC/CTTAAG"], ans: 3, exp: "Palindrome(회문 구조): DNA의 두 가닥을 각각 5'→3' 방향으로 읽었을 때 같은 서열이 되는 것." },
+                { q: "What molecular mechanism/feature does site-directed mutagenesis exploit to introduce a mutation at a specific site?", options: ["Flanking complementary bound nucleotides permit noncomplementary base pairing.", "Methylated nucleotides disrupt DNA polymerase's proofreading.", "Nucleotide substitution when one is depleted", "Transposase-induced base pair changes"], ans: 0, exp: "Site-directed mutagenesis: 원하는 위치에 변이를 주기 위해 사용. 양쪽의 상보적 결합 염기들이 가운데 불일치(mismatch) 염기쌍의 존재를 허용함." },
+                { q: "After digesting a DNA sequence, a restriction endonuclease can generate", options: ["blunt ends.", "overhangs.", "sticky ends.", "blunt ends, overhangs, or sticky ends."], ans: 3, exp: "Blunt end(평활말단), Sticky end(점착말단=overhang) 모두 생성 가능함." },
+                { q: "The Ti plasmid is best suited for genetically manipulating", options: ["Agrobacterium spp.", "fish.", "plants.", "viruses."], ans: 2, exp: "Ti plasmid는 식물(plants)에 유전자를 전달하기 위해 사용하는 벡터임." },
+                { q: "Recognizing pathogens that contain multiple unique proteins, which enable the human immune system to recognize just one and mount an effective response, has opened the door on development of some vaccines only being", options: ["attenuated carrier viruses.", "monovalent.", "subunit vaccines.", "purified protein administered."], ans: 2, exp: "Subunit vaccines(단위체 백신): 병원체 전체가 아니라 특정 항원 단백질만을 이용하는 백신." },
+                { q: "Cloning vectors can be distinguished from expression vectors by", options: ["carrying ori genes for replication of the cloned sequence.", "having a multiple cloning site (MCS).", "having a high copy number per cell.", "lacking a promoter site upstream of the insertion site."], ans: 3, exp: "Cloning vector는 보존용이라 프로모터가 필수적이지 않지만, Expression vector는 발현을 위해 프로모터가 반드시 존재함." }
+            ],
+            "12장 (대사 다양성)": [
+                { q: "Whether an organism is classified as a photoheterotroph or a photoautotroph depends on its", options: ["energy source.", "carbon source.", "oxygen requirements.", "carbon and energy sources."], ans: 1, exp: "heterotroph와 autotroph의 구분은 탄소원(carbon source)에 의해 결정됨." },
+                { q: "Two separate photosystems involved in electron flow is a hallmark of", options: ["anoxygenic phototrophs.", "green sulfur bacteria.", "oxygenic phototrophs.", "purple bacteria."], ans: 2, exp: "산소발생 광합성(oxygenic phototrophs)은 두 개의 광계(PSI, PSII)를 가짐." },
+                { q: "The Calvin cycle", options: ["is responsible for the fixation of CO2 into cell material.", "utilizes both NAD(P)H and ATP.", "requires RuBisCO.", "uses CO2, NAD(P)H, and ATP to make biomass with RuBisCO."], ans: 3, exp: "캘빈 회로는 CO2, ATP, NAD(P)H, 그리고 핵심 효소인 RuBisCO를 모두 사용함." },
+                { q: "In most cases, the final product of sulfur oxidation is", options: ["hydrogen sulfide.", "elemental sulfur.", "sulfate.", "thiosulfate."], ans: 2, exp: "황 산화의 최종 산물은 가장 산화된 형태인 황산염(sulfate, SO4 2-)임." },
+                { q: "Alternative autotrophic routes to the Calvin cycle, such as the reverse citric acid cycle and the hydroxypropionate pathway, are unified in their requirement for", options: ["CO2.", "coenzyme A.", "NAD(P)H.", "organic compound(s) formed."], ans: 0, exp: "Reverse TCA와 Hydroxypropionate 경로 모두 CO2를 고정하는 캘빈 회로의 대체 경로임." },
+                { q: "Anammox is an anaerobic process that generates energy from ________ and forms N2.", options: ["ammonia", "ammonium", "ammonia and nitrate", "ammonia and nitrite"], ans: 3, exp: "Anammox: ammonia + nitrite -> dinitrogen + water." },
+                { q: "Which of the following reactions is classified as a heterofermentation?", options: ["Hexose → 2 lactate + 2 H+", "HCOOH → H2 + CO2", "Glucose → lactate + ethanol + CO2 + H+", "Fructose → 3 acetate + 3 H+"], ans: 2, exp: "heterofermentation은 lactate 이외에 ethanol과 CO2 등 여러 생성물을 만듦." },
+                { q: "Obligate anaerobes can often use ________ electropositive redox couples than facultative anaerobes, and ________ metabolism is most common in this group as well.", options: ["lower / assimilative", "lower / dissimilative", "higher / assimilative", "higher / dissimilative"], ans: 0, exp: "절대 혐기성균은 산소를 못 쓰므로 더 낮은(lower) 산화환원 전위의 redox couple을 쓰며, 동화적(assimilative) 과정이 흔함." },
+                { q: "In Bacteria, the most common oxidized form of nitrogen is ________ and of sulfur is ________.", options: ["nitrate / sulfate", "nitrate / sulfite", "nitrite / sulfate", "nitrite / sulfite"], ans: 0, exp: "가장 흔한 산화형은 질산염(nitrate, NO3-)과 황산염(sulfate, SO4 2-)임." },
+                { q: "Fermentation often produces CO2, which can be used by ________ as an electron acceptor for energy.", options: ["acetogens", "methanotrophs", "methanogens", "acetogens and methanogens"], ans: 3, exp: "acetogens와 methanogens는 CO2를 전자수용체로 사용하는 절대 혐기성 미생물임." }
+            ],
+            "14~16장 (분류 및 진핵)": [
+                { q: "Biosynthesis of vitamin K (menaquinone) by ________ spp. inhabiting the ________ of humans is a potentially important mutualistic relationship for human health.", options: ["Bifidobacterium / intestinal tract", "Bifidobacterium / stomach", "Escherichia / intestinal tract", "Escherichia / stomach"], ans: 2, exp: "장내에 서식하는 Escherichia 대장균에 의한 비타민 K 합성은 중요한 상리공생 관계임." },
+                { q: "The order Lactobacillales within Firmicutes are also called the lactic acid bacteria because these bacteria", options: ["can aerobically catabolize lactic acid.", "can ferment lactate.", "produce lactate.", "uniquely require lactic acid as a precursor for cell wall biosynthesis."], ans: 2, exp: "유산균(Lactic acid bacteria)은 발효를 통해 젖산(lactate)을 생산하기 때문에 이름 붙여짐." },
+                { q: "Staphylococcus aureus is known to cause all of the following diseases EXCEPT", options: ["acne.", "arthritis.", "boils.", "dental caries."], ans: 3, exp: "충치(dental caries)는 주로 S. mutans에 의해 발생하며 S. aureus의 주 증상이 아님." },
+                { q: "Which group in Bacteria lacks cell walls?", options: ["Corynebacterium", "Mycoplasma", "Sporosarcina", "Tenericutes"], ans: 1, exp: "Mycoplasma는 세포벽이 없는 세균임." },
+                { q: "The ________ produce over 500 characterized antibiotics.", options: ["Bacteroidetes", "mycobacteria", "pseudomonads", "streptomycetes"], ans: 3, exp: "Streptomycetes 군은 상업적으로 중요한 수많은 항생제를 생성함." },
+                { q: "Archaea are", options: ["primarily ancient organisms that have not evolved very much in the last billion years.", "phylogenetically diverse, but functionally restricted to extremophiles and chemolithotrophs.", "a group of diverse microorganisms that inhabit almost every environment on Earth, including the colon of humans and other mammals.", "functionally diverse, but restricted to thermophilic or hyperthermophilic environments."], ans: 2, exp: "고균은 극한환경뿐만 아니라 인간의 장을 포함한 지구상의 거의 모든 환경에 서식함." },
+                { q: "Some strains of haloarchaea exhibit", options: ["anoxic growth at the expense of sugar fermentation.", "anaerobic respiration.", "anoxygenic photosynthesis.", "light-driven ATP synthesis under oxygen-limiting conditions."], ans: 3, exp: "호염성 고균(haloarchaea)은 산소가 제한된 조건에서 bacteriorhodopsin을 이용해 빛 유도 ATP 합성을 함." },
+                { q: "Methanogens", options: ["produce methane as a part of their energy metabolism.", "utilize methane as an energy source.", "process and store methane to detoxify it.", "produce, utilize, and detoxify methane."], ans: 0, exp: "메탄생성균(Methanogens)은 에너지 대사의 일환으로 메탄을 생성함." },
+                { q: "What is thought to be the maximum temperature for life to exist?", options: ["125°C", "150°C", "250°C", "500°C"], ans: 1, exp: "현재 생명체가 존재할 수 있는 이론적 최고 온도는 약 150°C로 여겨짐." },
+                { q: "Of the taxa listed, which is NOT classified as a protist?", options: ["Amoeba", "Euglena", "Giardia", "Saccharomyces"], ans: 3, exp: "Saccharomyces(효모)는 원생생물이 아니라 진균류(Fungi)에 속함." },
+                { q: "Which of the following is NOT a member of the Eukarya?", options: ["Protists", "Fungi", "Spirochetes", "Red algae"], ans: 2, exp: "Spirochetes(스피로헤타)는 진핵생물이 아니라 세균(Bacteria)임." },
+                { q: "Which algae are most closely related to plants?", options: ["Red algae", "Green algae", "Brown algae", "Euglenoids"], ans: 1, exp: "녹조류(Green algae)가 진화적으로 육상 식물과 가장 유연관계가 깊음." }
+            ],
+            "17~19장 (생태 및 환경)": [
+                { q: "Some nitrifying prokaryotes carry out metabolic cooperation by a process known as", options: ["competition.", "niche partitioning.", "syntrophy.", "antagonism."], ans: 2, exp: "Syntrophy(상리공생 대사): 서로 다른 미생물이 협력하여 대사 과정을 수행하는 것." },
+                { q: "A population consists of", options: ["all of the individuals of all species in the same area.", "all of the individuals of one species in the same area.", "all of the individuals that interact in different areas.", "all of the individuals that interact in the same area."], ans: 1, exp: "개체군(Population)은 같은 지역에 사는 '동일 종' 개체들의 집단임." },
+                { q: "According to bacterial abundance studies done so far on soils, the ________ represent the most abundant phylum.", options: ["Proteobacteria", "Acidobacteria", "Actinobacteria", "Firmicutes"], ans: 0, exp: "토양에서 가장 풍부하게 발견되는 세균 문(phylum)은 Proteobacteria임." },
+                { q: "Which of the following is an example of a biofilm?", options: ["Transient skin microbes", "Dental plaque", "Marine diatoms", "A planktonic microcolony"], ans: 1, exp: "치태(Dental plaque)는 구강 내 세균들이 표면에 부착하여 형성한 전형적인 생물막(Biofilm)임." },
+                { q: "The microbial oxygen-consuming capacity of a water sample is called its", options: ["chemical oxygen demand.", "biochemical capacity.", "biochemical oxygen demand.", "chemical capacity."], ans: 2, exp: "미생물이 유기물을 분해할 때 소모하는 산소량을 생화학적 산소 요구량(BOD)이라 함." },
+                { q: "________ use inorganic electron donors released from deep-sea hydrothermal vents.", options: ["Chemolithotrophs", "Photoheterotrophs", "Chemoheterotrophs", "Photolithotrophs"], ans: 0, exp: "심해 열수구 환경에서는 무기물을 전자공여체로 쓰는 화학무기영양생물(Chemolithotrophs)이 중요함." },
+                { q: "Which organisms form the foundation of the carbon cycle?", options: ["Anaerobic chemolithotrophs", "Chemoheterotrophs", "Chemoorganotrophs", "Phototrophs"], ans: 3, exp: "탄소 순환의 토대는 CO2를 고정하여 유기물을 생산하는 광영양생물(Phototrophs)임." },
+                { q: "The metabolic process of denitrification", options: ["oxidizes N2.", "oxidizes NO3-.", "reduces N2.", "reduces NO3-."], ans: 3, exp: "탈질화(Denitrification)는 질산염(NO3-)을 환원시켜 질소 가스(N2)로 만드는 과정임." },
+                { q: "Diatoms require silica due to their", options: ["Ca2+/Si4+ symporters.", "DNA replication mechanism.", "ornate frustules.", "unique phototrophic physiology."], ans: 2, exp: "규조류(Diatoms)는 화려한 규조각(frustules)을 만들기 위해 규소(silica)를 필요로 함." },
+                { q: "What is the largest carbon reservoir on Earth?", options: ["Terrestrial biosphere", "Rocks and sediments", "Aquatic biosphere", "Fossil fuels"], ans: 1, exp: "지구상 가장 큰 탄소 저장소는 암석과 퇴적물(Rocks and sediments)임." },
+                { q: "Increasing atmospheric carbon dioxide is", options: ["increasing sedimentation of C, Ca, and Si.", "increasing the effect of the biological pump.", "fueling increased primary production in ocean waters.", "acidifying the ocean and decreasing the rate of formation of calcareous shells."], ans: 3, exp: "대기 중 CO2 증가는 해양을 산성화시켜 석회질 껍질 형성을 방해함." },
+                { q: "Microbial leaching of minerals is dependent on how easily the mineral can be", options: ["precipitated.", "oxidized.", "reduced.", "corroded."], ans: 1, exp: "광물 용탈(Microbial leaching)은 광물이 얼마나 쉽게 산화(oxidized)될 수 있는지에 의존함." },
+                { q: "With increased levels of oxidizable materials, the biochemical oxygen demand (BOD) will", options: ["increase.", "decrease.", "remain the same.", "increase or decrease depending on the nature of the materials involved."], ans: 0, exp: "산화 가능한 유기물질이 많아질수록 미생물이 필요로 하는 산소량(BOD)은 증가함." },
+                { q: "Which treatment method(s) are used in primary wastewater treatment?", options: ["Biological only", "Chemical only", "Physical separation only", "Biological, chemical, and physical separation"], ans: 2, exp: "1차 하수 처리는 침전, 여과 등 물리적 분리(Physical separation)만을 수행함." },
+                { q: "Which of the following bacterial pathogens is found in water distribution systems?", options: ["Enterobacter aerogenes", "Klebsiella pneumoniae", "Legionella pneumophila", "Vibrio cholerae"], ans: 2, exp: "Legionella pneumophila는 급수 시스템, 에어컨 냉각탑 등 인공 수계에서 발견되는 주요 병원균임." },
+                { q: "The goal of wastewater treatment is to", options: ["produce potable water.", "remove pathogens from wastewater before it is released.", "reduce organic and inorganic materials in wastewater to a level that no longer supports microbial growth.", "remove pathogens from wastewater to produce potable water."], ans: 2, exp: "하수 처리의 주 목표는 유기/무기 물질을 줄여 방류 시 생태계 내 미생물의 과도한 생장을 막는 것임." }
+            ],
+            "20~21장 (병원성)": [
+                { q: "Diphtheria toxin is", options: ["a type of endotoxin.", "a cytolytic toxin.", "an AB toxin.", "a superantigen toxin."], ans: 2, exp: "디프테리아 독소는 전형적인 AB toxin으로, B 서브유닛이 수용체에 결합하고 A 서브유닛이 세포 내로 들어가 독성을 나타냄." },
+                { q: "Shiga toxin is an enterotoxin that is produced by", options: ["Shigella dysenteriae.", "Clostridium tetani.", "Escherichia coli O157:H7.", "Vibrio cholerae."], ans: 0, exp: "시가 독소(Shiga toxin)는 Shigella dysenteriae에 의해 생성되는 장독소임." },
+                { q: "Exotoxins are ________, but endotoxins are ________.", options: ["lipopolysaccharide-lipoprotein complexes / proteins", "carbohydrates / proteins", "lipids / proteins", "proteins / lipopolysaccharide-lipoprotein complexes"], ans: 3, exp: "외독소(Exotoxin)는 분비되는 단백질이고, 내독소(Endotoxin)는 그람 음성균 외막의 LPS 성분임." },
+                { q: "Which of the following is a category of exotoxin?", options: ["Cytolytic toxin", "Lipophilic toxin", "α-toxin", "β-toxin"], ans: 0, exp: "세포용해 독소(Cytolytic toxin)는 외독소의 한 주요 범주임." },
+                { q: "Which of these microorganisms is most likely to be found in the human stomach?", options: ["Helicobacter pylori", "Streptococcus sobrinus", "Streptococcus mutans", "Roseobacter denitrificans"], ans: 0, exp: "Helicobacter pylori는 강산성인 인간의 위에 적응하여 서식하는 대표적인 세균임." },
+                { q: "The following compounds are all produced by intestinal microbiota EXCEPT", options: ["lysine.", "vitamin C.", "vitamin B12.", "vitamin K."], ans: 1, exp: "장내 미생물총은 비타민 B12, K, 필수 아미노산(lysine 등)을 합성하지만 비타민 C는 합성하지 않음." },
+                { q: "Which of the following is the most common probiotics?", options: ["Bifidobacterium species", "Clostridium species", "Escherichia coli", "Corynebacterium species"], ans: 0, exp: "Bifidobacterium은 요구르트 등에 흔히 포함되는 대표적인 유익균(프로바이오틱스)임." },
+                { q: "Normal microbiota helps to ________ colonization of pathogenic organisms.", options: ["promote", "prevent", "maintain", "accelerate"], ans: 1, exp: "정상 상재균은 경쟁과 대사 산물을 통해 병원성 미생물의 정착을 방지(prevent)하는 역할을 함." },
+                { q: "Some antibiotics inhibit protein synthesis by disruption of translation through interactions with the", options: ["ribosome.", "protein.", "DNA.", "chromosome."], ans: 0, exp: "번역(translation)을 방해하여 단백질 합성을 억제하는 항생제는 리보솜(ribosome)과 상호작용함." },
+                { q: "Which of the following would be useful for treating Candida?", options: ["An azole", "A fusion inhibitor", "A macrolide", "A nucleoside reverse transcriptase inhibitor"], ans: 0, exp: "Candida(진균류) 감염 치료에는 진균 세포막 합성을 억제하는 Azole 계열 항진균제가 유용함." },
+                { q: "A mechanism for penicillin resistance in bacteria is", options: ["acetylation of the antibiotic.", "phosphorylation of the antibiotic.", "confirmation change of the antibiotic.", "splitting the β-lactam ring of the antibiotic."], ans: 3, exp: "페니실린 내성 기작 중 하나는 세균이 베타-락타마아제를 생성해 페니실린의 핵심 구조인 β-lactam ring을 분해하는 것임." }
+            ]
+        };
+
+        // DOM Elements
+        const chapterList = document.getElementById('chapterList');
+        const questionBadge = document.getElementById('questionBadge');
+        const scoreBadge = document.getElementById('scoreBadge');
+        const questionText = document.getElementById('questionText');
+        const optionsContainer = document.getElementById('optionsContainer');
+        const explanationBox = document.getElementById('explanationBox');
+        const explanationText = document.getElementById('explanationText');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressFill = document.getElementById('progressFill');
+
+        let currentChapter = "";
+        let currentQuestions = [];
+        let currentIndex = 0;
+        let score = 0;
+        let answered = false;
+
+        // Init Chapters
+        Object.keys(quizData).forEach((chapter, index) => {
+            const li = document.createElement('li');
+            li.textContent = chapter;
+            li.onclick = () => loadChapter(chapter, li);
+            chapterList.appendChild(li);
+        });
+
+        function loadChapter(chapter, element) {
+            document.querySelectorAll('.chapter-list li').forEach(el => el.classList.remove('active'));
+            if(element) element.classList.add('active');
+
+            currentChapter = chapter;
+            currentQuestions = [...quizData[chapter]];
+            currentIndex = 0;
+            score = 0;
+            loadQuestion();
+        }
+
+        function loadQuestion() {
+            if(currentIndex >= currentQuestions.length) {
+                finishChapter();
+                return;
+            }
+
+            answered = false;
+            explanationBox.style.display = 'none';
+            nextBtn.disabled = true;
+            nextBtn.textContent = "다음 문제 ➡️";
+
+            const q = currentQuestions[currentIndex];
+            questionBadge.textContent = `문제 ${currentIndex + 1} / ${currentQuestions.length}`;
+            scoreBadge.textContent = `점수: ${score}점`;
+            questionText.textContent = q.q;
+
+            // Update Progress
+            const progress = (currentIndex / currentQuestions.length) * 100;
+            progressFill.style.width = `${progress}%`;
+
+            optionsContainer.innerHTML = '';
+            q.options.forEach((optText, index) => {
+                const optDiv = document.createElement('div');
+                optDiv.className = 'option';
+                optDiv.textContent = `${String.fromCharCode(65 + index)}) ${optText}`;
+                optDiv.onclick = () => selectOption(index, optDiv);
+                optionsContainer.appendChild(optDiv);
+            });
+        }
+
+        function selectOption(index, element) {
+            if(answered) return;
+            answered = true;
+            nextBtn.disabled = false;
+
+            const q = currentQuestions[currentIndex];
+            const isCorrect = index === q.ans;
+
+            const allOptions = optionsContainer.children;
+            allOptions[q.ans].classList.add('show-correct');
+
+            if (isCorrect) {
+                element.classList.add('selected', 'correct');
+                score += 10;
+                scoreBadge.textContent = `점수: ${score}점`;
+                showCelebration("🎉");
+            } else {
+                element.classList.add('selected', 'incorrect');
+                showCelebration("❌");
+            }
+
+            explanationText.textContent = q.exp;
+            explanationBox.style.display = 'block';
+
+            if(currentIndex === currentQuestions.length - 1) {
+                nextBtn.textContent = "결과 보기 🏆";
+            }
+        }
+
+        function showCelebration(emoji) {
+            const el = document.createElement('div');
+            el.className = 'celebration';
+            el.textContent = emoji;
+            document.body.appendChild(el);
+            setTimeout(() => el.remove(), 1000);
+        }
+
+        function finishChapter() {
+            progressFill.style.width = '100%';
+            questionBadge.textContent = "완료!";
+            questionText.innerHTML = `🎉 <b>${currentChapter}</b> 학습을 완료했습니다!<br><br>최종 점수: <b>${score} / ${currentQuestions.length * 10}</b> 점`;
+            optionsContainer.innerHTML = '';
+            explanationBox.style.display = 'none';
+            nextBtn.disabled = true;
+        }
+
+        nextBtn.onclick = () => {
+            currentIndex++;
+            loadQuestion();
+        };
+
+        // Load first chapter by default
+        const firstChapter = Object.keys(quizData)[0];
+        loadChapter(firstChapter, chapterList.firstChild);
+
+    </script>
+</body>
+</html>
